@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>cat@kali:~$ password-check</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      background: #0b0f17;
+      color: #e2e8f0;
+      font-family: "Courier New", monospace;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* background cat */
+    .bg-cat {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: pre;
+      font-size: 13px;
+      color: #0ea5e9;
+      opacity: 0.06;
+      pointer-events: none;
+      z-index: 0;
+      text-shadow: 0 0 12px rgba(14,165,233,0.3);
+    }
+
+    .terminal {
+      max-width: 700px;
+      margin: auto;
+      background: #020617;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.6);
+      position: relative;
+      z-index: 1;
+    }
+
+    .line {
+      margin-bottom: 10px;
+      word-wrap: break-word;
+    }
+
+    .prompt {
+      color: #38bdf8;
+    }
+
+    .user {
+      color: #22c55e;
+    }
+
+    input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e2e8f0;
+      font-family: inherit;
+      font-size: 16px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      background: #e2e8f0;
+      animation: blink 1s infinite;
+      margin-left: 4px;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .output {
+      margin-top: 15px;
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .weak { color: #f87171; }
+    .medium { color: #facc15; }
+    .strong { color: #38bdf8; }
+
+    .error {
+      color: #f87171;
+      margin-top: 10px;
+    }
+
+    /* mobile-ish friendly */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .terminal {
+        width: 100%;
+        padding: 15px;
+      }
+
+      input {
+        width: 100%;
+        font-size: 16px;
+      }
+
+      .line {
+        font-size: 14px;
+      }
+
+      .output {
+        font-size: 12px;
+      }
+
+      .bg-cat {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND CAT -->
+  <div class="bg-cat">
+⠀⠀⠀⠀⠀⠀⢠⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢸⣿⣿⣷⣄⠀⠀⠀⠀⠀⢀⣀⣤⣤⣄⣀
+⠀⠀⠀⠀⠀⠀⠸⣿⡇⠙⢿⣷⣄⠀⣠⣾⡿⠛⠋⠉⠛⠻⢿⣶⡀
+⠀⠀⠀⠀⠀⢀⣾⡿⠃⠀⠀⠙⢿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠈⣿⣇
+⣶⣶⣶⣶⣾⡿⠁⠀⠀⠀⠘⠃⢸⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿
+⠀⠙⢿⣷⣄⠀⠀⠀⠀⠐⠂⠀⠀⢸⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿
+⠀⠀⠀⠙⢿⣦⡀⠘⠃⠀⠀⠀⠀⠀⢻⣿⡀⠀⠀⠀⠀⠀⠀⠀⣠⣿⠏
+⠀⠀⠀⠀⠀⠙⢿⣦⡀⠀⠀⠀⠀⠀⠀⠙⠟⠀⠀⠀⠀⠀⢀⣶⡿⠋
+⠀⠀⠀⠀⠀⠀⠀⠙⢿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⡿⠋
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣦⡀⠀⠀⠀⠀⠀⢀⣴⡿⠋
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣦⡀⠀⢀⣴⡿⠋
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣶⣿⠏
+  </div>
+
+  <!-- terminal style -->
+  <div class="terminal">
+
+    <div class="line">
+      <span class="prompt">ssh</span> <span class="user">cat@kali</span>
+    </div>
+
+    <div class="line">
+      password: <input type="password" id="password" autofocus />
+      <span class="cursor"></span>
+    </div>
+
+    <div class="error" id="errorText"></div>
+
+    <div class="output" id="output"></div>
+
+  </div>
+
+  <script>
+    const input = document.getElementById("password");
+    const output = document.getElementById("output");
+    const errorText = document.getElementById("errorText");
+
+    function timeToCrack(entropy) {
+      const guessesPerSecond = 1e9;
+      const seconds = Math.pow(2, entropy) / guessesPerSecond;
+
+      if (seconds < 60) return `${Math.round(seconds)} seconds`;
+      if (seconds < 3600) return `${Math.round(seconds / 60)} minutes`;
+      if (seconds < 86400) return `${Math.round(seconds / 3600)} hours`;
+      if (seconds < 2592000) return `${Math.round(seconds / 86400)} days`;
+      if (seconds < 31536000) return `${Math.round(seconds / 2592000)} months`;
+      if (seconds < 3153600000) return `${Math.round(seconds / 31536000)} years`;
+      return "centuries+";
+    }
+
+    input.addEventListener("input", () => {
+      const password = input.value;
+
+      if (password.includes(" ")) {
+        errorText.textContent = "error: spaces not allowed";
+        output.innerHTML = "";
+        return;
+      } else {
+        errorText.textContent = "";
+      }
+
+      let score = 0;
+      let tips = [];
+
+      if (password.length >= 8) score++; else tips.push("increase length");
+      if (/[A-Z]/.test(password)) score++; else tips.push("add uppercase");
+      if (/[a-z]/.test(password)) score++; else tips.push("add lowercase");
+      if (/[0-9]/.test(password)) score++; else tips.push("add numbers");
+      if (/[^A-Za-z0-9]/.test(password)) score++; else tips.push("add symbols");
+
+      let charset = 0;
+      if (/[a-z]/.test(password)) charset += 26;
+      if (/[A-Z]/.test(password)) charset += 26;
+      if (/[0-9]/.test(password)) charset += 10;
+      if (/[^A-Za-z0-9]/.test(password)) charset += 32;
+
+      let entropy = password.length * Math.log2(charset || 1);
+      let crack = timeToCrack(entropy);
+
+      let strength = "weak";
+      if (score >= 5) strength = "strong";
+      else if (score >= 3) strength = "medium";
+
+      output.innerHTML = `
+        <div>> meow analyzing...</div>
+        <div>> entropy: ${entropy.toFixed(2)} bits</div>
+        <div>> estimated crack time: ${crack}</div>
+        <div class="${strength}">> strength: ${strength}</div>
+        ${
+          tips.length
+            ? "<div>> suggestions:<br>- " + tips.join("<br>- ") + "</div>"
+            : "<div>> status: purrfect 🐾</div>"
+        }
+      `;
+    });
+  </script>
+
+</body>
+</html>
